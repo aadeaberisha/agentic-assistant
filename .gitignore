@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Index / artifacts
+data/.index/
+*.pkl
+*.npy
+
+# Streamlit
+.streamlit/
+
+# LangChain / LangGraph
+.langchain/
+.langgraph/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
