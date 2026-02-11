@@ -3,149 +3,79 @@
 **Project:** Engineering Team Alpha  
 **Last Updated:** Week 12, 2024
 
-This document tracks major technical decisions made during the project lifecycle.
+## Completed Decisions
+
+| # | Title | Date | Owner | Status | Outcome |
+|---|-------|------|-------|--------|---------|
+| 1 | Database Selection | Week 2, 2024 | Alex Rivera | Approved | PostgreSQL |
+| 2 | Analytics Approach | Week 10, 2024 | Sarah Chen | Approved | Build In-House |
+| 3 | Payment API Retry Strategy | Week 8, 2024 | Mike Johnson | Approved | Exponential Backoff + Circuit Breaker |
 
 ---
 
 ## Decision #1: Database Selection
 
-**Date:** Week 2, 2024  
-**Decision Maker:** Alex Rivera (Database Lead)  
-**Status:** Approved
-
-### Context
-The project required selecting a production database to replace the existing MySQL setup. Key requirements included:
-- High performance for analytics workloads
-- Strong ACID compliance
-- Excellent JSON support
+**Context:**
+- Required high performance for analytics workloads
+- Strong ACID compliance, excellent JSON support
 - Active community and support
 
-### Options Considered
+**Options:**
+- **PostgreSQL:** Superior JSON/JSONB support, advanced analytics (window functions, CTEs), strong ACID, excellent read-heavy performance, active development. Cons: steeper learning curve, complex replication.
+- **MySQL 8.0:** Team familiarity, simpler setup, good transactional performance. Cons: limited JSON queries, weaker analytics, less suitable for analytics dashboard.
 
-#### Option A: PostgreSQL
-**Pros:**
-- Superior JSON/JSONB support for flexible schemas
-- Advanced analytics capabilities (window functions, CTEs)
-- Strong ACID guarantees
-- Excellent performance for read-heavy workloads
-- Active development and large community
+**Final Decision:** PostgreSQL
 
-**Cons:**
-- Slightly steeper learning curve
-- More complex replication setup
+**Rationale:**
+- Analytics dashboard (Week 16) requires complex queries and JSON handling
+- JSONB support aligns with AI recommendations engine (Week 24)
+- Better for mixed transactional/analytical workloads
+- Strong ecosystem and active development
 
-#### Option B: MySQL 8.0
-**Pros:**
-- Team familiarity with existing MySQL infrastructure
-- Simpler initial setup
-- Good performance for transactional workloads
-
-**Cons:**
-- Limited JSON query capabilities
-- Weaker analytics features compared to PostgreSQL
-- Less suitable for future analytics dashboard requirements
-
-### Final Decision
-**Selected:** PostgreSQL
-
-### Rationale
-1. **Analytics Requirements:** The roadmap includes an advanced analytics dashboard (Week 16) that requires complex queries and JSON data handling
-2. **Future-Proofing:** PostgreSQL's JSONB support aligns with planned AI recommendations engine (Week 24)
-3. **Performance:** Better suited for mixed transactional and analytical workloads
-4. **Community:** Strong ecosystem and active development
-
-### Implementation
-- Migration started Week 12
-- Target completion: Week 13
-- Owner: Alex Rivera
+**Implementation:** Migration started Week 12, target Week 13. Owner: Alex Rivera.
 
 ---
 
 ## Decision #2: Analytics Approach
 
-**Date:** Week 10, 2024  
-**Decision Maker:** Sarah Chen (Engineering Lead)  
-**Status:** Approved
+**Context:** Advanced analytics dashboard (Week 16) - build in-house vs. third-party tool.
 
-### Context
-The roadmap includes an advanced analytics dashboard (Week 16). We needed to decide between building analytics in-house versus using a third-party tool.
+**Options:**
+- **Build In-House:** Full control, no per-user costs, tight integration, leverage PostgreSQL analytics. Cons: 6-8 weeks development, dedicated resources, ongoing maintenance, may delay roadmap.
+- **Third-Party Tool (Tableau, Looker):** Faster (2-3 weeks), professional UI/UX, built-in visualizations, reduced effort. Cons: licensing costs, limited customization, vendor lock-in, may not meet all requirements.
 
-### Options Considered
+**Final Decision:** Build In-House
 
-#### Option A: Build In-House
-**Pros:**
-- Full control over features and customization
-- No per-user licensing costs
-- Tight integration with our data model
-- Can leverage PostgreSQL's native analytics capabilities
+**Rationale:**
+- Long-term cost savings vs. per-user licensing
+- Specific metrics/visualizations not available in standard tools
+- Tight coupling with PostgreSQL database and data model
+- Analytics dashboard is core differentiator, not supporting feature
+- Team capacity allows in-house development without impacting Q2 milestones
 
-**Cons:**
-- Significant development time (estimated 6-8 weeks)
-- Requires dedicated engineering resources
-- Ongoing maintenance burden
-- May delay other roadmap items
-
-#### Option B: Third-Party Tool (e.g., Tableau, Looker)
-**Pros:**
-- Faster time to market (2-3 weeks integration)
-- Professional UI/UX out of the box
-- Built-in visualization components
-- Reduced development effort
-
-**Cons:**
-- Licensing costs (per-user pricing model)
-- Limited customization options
-- Vendor lock-in risk
-- May not meet all specific requirements
-
-### Final Decision
-**Selected:** Build In-House
-
-### Rationale
-1. **Cost Efficiency:** Long-term cost savings vs. per-user licensing
-2. **Customization:** Need for specific metrics and visualizations not available in standard tools
-3. **Integration:** Tight coupling with our PostgreSQL database and data model
-4. **Roadmap Alignment:** Analytics dashboard is a core differentiator, not a supporting feature
-5. **Resource Availability:** Team capacity allows for in-house development without impacting other Q2 milestones
-
-### Implementation Plan
-- Design phase: Week 13-14
-- Development: Week 15-16
-- Owner: Sarah Chen
-- Dependencies: Database migration completion (Week 13)
+**Implementation:** Design Week 13-14, Development Week 15-16. Owner: Sarah Chen. Dependency: Database migration (Week 13).
 
 ---
 
 ## Decision #3: Payment API Retry Strategy
 
-**Date:** Week 8, 2024  
-**Decision Maker:** Mike Johnson (Backend Lead)  
-**Status:** Approved
+**Context:** Addressing Risk #2 (Third-Party API Dependencies) - need robust error handling for payment processing.
 
-### Context
-Addressing Risk #2 (Third-Party API Dependencies) from the risk assessment. Need robust error handling for payment processing.
+**Final Decision:** Exponential Backoff with Circuit Breaker Pattern
 
-### Decision
-**Selected:** Exponential Backoff with Circuit Breaker Pattern
-
-### Rationale
-- Prevents overwhelming the payment API during outages
+**Rationale:**
+- Prevents overwhelming payment API during outages
 - Reduces unnecessary API calls and costs
 - Improves user experience with automatic retries
 - Circuit breaker prevents cascading failures
 
-### Implementation
-- Retry logic: 3 attempts with exponential backoff (1s, 2s, 4s)
-- Circuit breaker: Opens after 5 consecutive failures
-- Fallback: Secondary payment provider activated when circuit is open
-- Owner: Mike Johnson
-- Status: Completed (Week 8)
+**Implementation:** 3 retries with exponential backoff (1s, 2s, 4s), circuit breaker opens after 5 consecutive failures, fallback to secondary payment provider when circuit open. Owner: Mike Johnson. Status: Completed (Week 8).
 
 ---
 
 ## Pending Decisions
 
-### Decision #4: Mobile App Architecture
+**Decision #4: Mobile App Architecture**  
 **Status:** Pending  
 **Owner:** Mike Johnson  
 **Decision needed by:** Week 15
@@ -157,4 +87,4 @@ Addressing Risk #2 (Third-Party API Dependencies) from the risk assessment. Need
 
 ---
 
-*This log is maintained by the Engineering Lead and updated after each major technical decision.*
+*Maintained by Engineering Lead, updated after each major technical decision.*
